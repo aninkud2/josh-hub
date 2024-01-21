@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>josh hub</title>
+    <script src="https://cdn.socket.io/4.7.3/socket.io.min.js" integrity="sha384-+miq58Ltmjm+SSP5g8Ok6dpMO/6R4n8xe/x1Yj0Bdb9kiEz25LTnWv/GZQTRQamg" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body style="background: rgb(2, 154, 154);">
+    <h1 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 35px; color: green;"></h1>
+    <div style="display: flex; align-items: flex-end; justify-content:flex-start; padding-inline: 20px;">
+    <textarea class="sendme" style=" background: lightcyan; width: 450px; height: 150px; border-radius: 10px; border: solid 2px rgb(128, 128, 128); padding-inline: 15px; padding-top: 10px;"></textarea>
+    <button onclick="chatFunc()" style="width: 115px; height: 40px; border-radius: 50px; border: solid 1px green; background: green; color: white; font-size: 15px; margin-left: 20px;" >SEND CHAT</button>
+    </div>
+
+<ul style="list-style: none; padding: 0; margin: 15px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" id="messages"></ul>
+
+    <script>
+let userName;
+do {
+  userName = prompt("Enter your name");
+  if (userName.length < 1 || userName === null) {
+    alert("Please enter your name!");
+  }
+} while (userName.length < 1 || userName === null);
+document.querySelector("h1").innerHTML=`Hello ${userName} welcome to Josh  Hub, Feel free to express your self`
+const socket=io("http://localhost:9824")
+
+// Display message history
+socket.on('message history', function (history) {
+      const messagesList = document.getElementById('messages');
+      history.forEach(message => {
+        const listItem = document.createElement('li');
+        listItem.textContent = message;
+        listItem.style.backgroundColor = "lightgreen";
+            listItem.style.width = "max-content";
+            listItem.style.height = "max-content";
+            listItem.style.borderRadius = "10px";
+            listItem.style.padding = "10px";
+            listItem.style.marginBottom = "10px";
+        messagesList.appendChild(listItem);
+      });
+    });
+
+
+    socket.on("message", (data) => {
+    const messagesList = document.getElementById('messages');
+
+      // Display other clients' messages in the ul element
+      const listItem = document.createElement('li');
+      listItem.textContent = data;
+      listItem.style.backgroundColor = "lightgreen";
+            listItem.style.width = "max-content";
+            listItem.style.height = "max-content";
+            listItem.style.borderRadius = "10px";
+            listItem.style.padding = "10px";
+            listItem.style.marginBottom = "10px";
+      messagesList.appendChild(listItem);
+  });
+
+const chatFunc=()=>{
+  messageToBeSent = document.querySelector(".sendme").value
+socket.emit("message","mesage from "+userName+":   "+messageToBeSent)
+
+document.querySelector(".sendme").value = "";
+
+  // Append the message to the DOM immediately
+  const messagesList = document.getElementById('messages');
+  const listItem = document.createElement('li');
+  listItem.textContent = "You: " + messageToBeSent;
+  listItem.style.backgroundColor = "lightgreen";
+            listItem.style.width = "max-content";
+            listItem.style.height = "max-content";
+            listItem.style.borderRadius = "10px";
+            listItem.style.padding = "10px";
+            listItem.style.marginBottom = "10px";
+  messagesList.appendChild(listItem);
+
+
+}
+    </script>
+</body>
+</html>
